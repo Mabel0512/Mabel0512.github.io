@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>榕樹下的香甜秘密</title>
+  <style>
+    /* 1. 可愛童趣配色與背景 */
+    body {
+      font-family: "Mamelon", "Quicksand", "微軟正黑體", -apple-system, sans-serif;
+      background-color: #fffdf0; /* 溫馨柔和奶黃色 */
+      color: #5c4b43;
+      margin: 0;
+      padding: 40px 20px;
+      line-height: 1.8;
+    }
+
+    /* 2. 可愛標頭 */
+    header {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 50px auto;
+    }
+    h1 {
+      font-size: 2.5rem;
+      color: #e86a58; /* 柔和暖粉橘色 */
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+    .subtitle {
+      font-size: 1.15rem;
+      color: #8c7365;
+      background-color: #ffecc7;
+      display: inline-block;
+      padding: 6px 20px;
+      border-radius: 30px;
+    }
+
+    /* 3. 單欄繪本式流向佈局（大圖展示） */
+    .story-container {
+      max-width: 820px; /* 拉大寬度，讓圖片與文字更大更清楚 */
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 45px; /* 卡片之間的舒適間距 */
+    }
+
+    /* 4. 可愛繪本卡片（移除點擊感與懸浮效果） */
+    .story-card {
+      background: #ffffff;
+      border-radius: 24px; /* 超圓潤可愛邊角 */
+      overflow: hidden;
+      border: 3px dashed #f2c9ac; /* 可愛手繪風虛線邊框 */
+      box-shadow: 0 8px 20px rgba(232, 106, 88, 0.06); /* 輕微柔和陰影 */
+    }
+
+    /* 5. 大尺寸清晰圖片展示 */
+    .card-img-wrapper {
+      width: 100%;
+      background-color: #fff9f0;
+    }
+    .story-card img {
+      width: 100%;
+      height: auto; /* 保持圖片原始比例完整展示，清晰不裁切 */
+      display: block;
+    }
+
+    /* 6. 可愛溫馨內文 */
+    .card-content {
+      padding: 30px;
+      background-color: #ffffff;
+    }
+    .card-title {
+      font-size: 1.5rem;
+      margin: 0 0 12px 0;
+      color: #e86a58;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title::before {
+      content: "✨"; /* 可愛小裝飾 */
+      font-size: 1.2rem;
+    }
+    .card-text {
+      font-size: 1.1rem; /* 放大文字，更好閱讀 */
+      color: #6e5a50;
+      margin: 0;
+      text-align: justify;
+    }
+
+    /* 頁尾 */
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      color: #b39b8d;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>榕樹下的香甜秘密</h1>
+    <p class="subtitle">一顆不肯發芽的地瓜，如何變成村落裡最受歡迎的快樂泉源？</p>
+  </header>
+
+  <main class="story-container">
+
+    <!-- 第一張：阿樹公的古早味地瓜攤 -->
+    <article class="story-card">
+      <div class="card-img-wrapper">
+        <img src="阿樹公的古早味地瓜攤.png" alt="阿樹公的古早味地瓜攤">
+      </div>
+      <div class="card-content">
+        <h2 class="card-title">阿樹公的古早味地瓜攤</h2>
+        <p class="card-text">在鄉下村落的大榕樹下，阿樹公推著一部舊舊的三輪車賣烤地瓜。每到傍晚，熱騰騰的甕烤地瓜一出爐，濃濃的焦糖甜香就會飄滿整條馬路。</p>
+      </div>
+    </article>
+
+    <!-- 第二張：不肯發芽的阿福 -->
+    <article class="story-card">
+      <div class="card-img-wrapper">
+        <img src="不肯發芽的阿福.png" alt="不肯發芽的阿福">
+      </div>
+      <div class="card-content">
+        <h2 class="card-title">不肯發芽的阿福</h2>
+        <p class="card-text">地瓜堆裡有一顆特別圓潤的「阿福」。阿福有個小秘密：他不想被拿去煮地瓜湯，也不想變成地瓜球，他最大的夢想，就是被烤得香香軟軟，給最懂品嚐的人吃。</p>
+      </div>
+    </article>
+
+    <!-- 第三張：挑食的小男孩 -->
+    <article class="story-card">
+      <div class="card-img-wrapper">
+        <img src="挑食的小男孩.png" alt="挑食的小男孩">
+      </div>
+      <div class="card-content">
+        <h2 class="card-title">挑食的小男孩</h2>
+        <p class="card-text">隔壁村落的阿寶最討厭吃地瓜，每天吃飯都讓媽媽頭痛。這天阿寶被媽媽拉到攤子前，阿寶嘟著嘴，死活不肯接過阿樹公遞過來的地瓜。</p>
+      </div>
+    </article>
+
+    <!-- 第四張：嗶!嗶!剝!剝! -->
+    <article class="story-card">
+      <div class="card-img-wrapper">
+        <img src="地瓜的嗶嗶剝剝魔法.png" alt="地瓜的「嗶嗶剝剝」魔法">
+      </div>
+      <div class="card-content">
+        <h2 class="card-title">嗶 ! 嗶 ! 啵 ! 啵 ! </h2>
+        <p class="card-text">阿樹公笑著把阿福撕開，熱氣伴隨微焦的蜜糖汁流了出來，發出「嗶嗶啵啵」的輕響。阿樹公說：「你聽，這顆地瓜在唱歌，說他把自己烤得像麥芽糖一樣甜了喔！」</p>
+      </div>
+    </article>
+
+    <!-- 第五張：意想不到的香甜美味 -->
+    <article class="story-card">
+      <div class="card-img-wrapper">
+        <img src="一口咬下的驚喜.png" alt="一口咬下的驚喜">
+      </div>
+      <div class="card-content">
+        <h2 class="card-title">意想不到的香甜美味</h2>
+        <p class="card-text">阿寶好奇地湊過去聞了聞，忍不住張嘴咬了一大口。軟糯綿密的金黃色肉質在舌尖融化，比冰淇淋還香甜！阿寶眼睛一亮，三兩下就把整顆阿福吃得乾乾淨淨。</p>
+      </div>
+    </article>
+
+    <!-- 第六張：榕樹下的快樂時光 -->
+    <article class="story-card">
+      <div class="card-img-wrapper">
+        <img src="榕樹下的快樂時光.jpg" alt="榕樹下的快樂時光">
+      </div>
+      <div class="card-content">
+        <h2 class="card-title">榕樹下的快樂時光</h2>
+        <p class="card-text">從那天起，阿寶成了地瓜攤的常客，每天放學都跑來榕樹下聽地瓜「唱歌」。夕陽下，三輪車冒著白煙，村落裡滿是孩子們滿足的笑聲與甜蜜的香氣。</p>
+      </div>
+    </article>
+
+  </main>
+
+  <footer>
+    <p>網頁設計與敘事 Web Design for Storytelling</p>
+  </footer>
+
+</body>
+</html>
