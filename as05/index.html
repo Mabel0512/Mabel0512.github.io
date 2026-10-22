@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap 4 單頁式網頁範例</title>
+    
+    <!-- Bootstrap CSS 4.6.2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+    <style>
+        /* 全螢幕 Banner 設置 (長度約為 1 個螢幕高) */
+        .banner-div {
+            min-height: calc(100vh - 58px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ff5722; /* 橘紅色背景 */
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 首頁與區段1之間的白色留白區 */
+        .white-spacer {
+            height: 150px;
+            background-color: #ffffff;
+        }
+
+        /* 區段內文區塊高度 (讓整體 Section 高度延伸至約 Banner 的兩倍長) */
+        .section-content-area {
+            min-height: calc(100vh - 58px);
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+        }
+
+        /* 雙重內距與內容區塊設計 */
+        .content-padding {
+            padding: 0 2rem;
+            width: 100%;
+        }
+
+        .content-bg {
+            background-color: #ffffff; /* 亮白底卡片 */
+            padding: 2.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e9ecef;
+        }
+
+        /* 導覽列中的「首頁」樣式強化 (更黑更大) */
+        .brand-home-link {
+            font-size: 1.35rem;
+            font-weight: 900 !important;
+            color: #212529 !important; /* 深黑色 */
+            padding-right: 1.5rem;
+        }
+
+        /* 區段選單文字樣式 */
+        .nav-section-link {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #555555 !important;
+        }
+        .nav-section-link:hover {
+            color: #000000 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. 頁首 Banner -->
+    <header class="container-fluid bg-info text-white text-center py-5" id="page-header">
+        <h1 class="display-4 font-weight-bold mb-0">這裡是 Banner</h1>
+    </header>
+
+    <!-- 2. 頂部導覽列 (淺灰色底、內容全部靠左) -->
+    <nav class="navbar navbar-expand-md navbar-light bg-light sticky-top shadow-sm" id="mainNav">
+        <div class="container-fluid px-4">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- mr-auto 確保所有選項靠最左邊排列 -->
+                <ul class="navbar-nav mr-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link brand-home-link smooth-scroll" href="#page-header">首頁</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-section-link smooth-scroll" href="#section1">區段一</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-section-link smooth-scroll" href="#section2">區段二</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-section-link smooth-scroll" href="#section3">區段三</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 導覽列下方一小段白色區段 -->
+    <div class="white-spacer d-flex align-items-center justify-content-center border-bottom">
+        <p class="text-muted mb-0">（白色過渡區塊）</p>
+    </div>
+
+    <!-- 3. 三個重複結構的區段 (Sections 1~3) -->
+
+    <!-- ===== 區段一 ===== -->
+    <section id="section1">
+        <!-- 橘紅色 Banner 區塊 -->
+        <div class="banner-div">
+            <div class="text-center">
+                <h2 class="display-3 font-weight-bold">區段一 Banner</h2>
+            </div>
+        </div>
+        <!-- 內容區塊 (格線與雙重內距) -->
+        <div class="section-content-area border-top border-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <div class="content-padding">
+                            <div class="content-bg shadow-sm">
+                                <h3 class="mb-3 text-dark font-weight-bold">區段1 內容</h3>
+                                <p class="text-secondary leading-relaxed mb-0">
+                                    這是區段1的內容。Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in libero nec dolor luctus bibendum. Quisque vel quam nec massa dictum varius ac eu urna. Suspendisse ut tristique ex.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 區段二 ===== -->
+    <section id="section2">
+        <!-- 橘紅色 Banner 區塊 -->
+        <div class="banner-div">
+            <div class="text-center">
+                <h2 class="display-3 font-weight-bold">區段二 Banner</h2>
+            </div>
+        </div>
+        <!-- 內容區塊 -->
+        <div class="section-content-area border-top border-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <div class="content-padding">
+                            <div class="content-bg shadow-sm">
+                                <h3 class="mb-3 text-dark font-weight-bold">區段2 內容</h3>
+                                <p class="text-secondary leading-relaxed mb-0">
+                                    這是區段2的內容。Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in libero nec dolor luctus bibendum. Quisque vel quam nec massa dictum varius ac eu urna. Suspendisse ut tristique ex.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 區段三 ===== -->
+    <section id="section3">
+        <!-- 橘紅色 Banner 區塊 -->
+        <div class="banner-div">
+            <div class="text-center">
+                <h2 class="display-3 font-weight-bold">區段三 Banner</h2>
+            </div>
+        </div>
+        <!-- 內容區塊 -->
+        <div class="section-content-area border-top border-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <div class="content-padding">
+                            <div class="content-bg shadow-sm">
+                                <h3 class="mb-3 text-dark font-weight-bold">區段3 內容</h3>
+                                <p class="text-secondary leading-relaxed mb-0">
+                                    這是區段3的內容。Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in libero nec dolor luctus bibendum. Quisque vel quam nec massa dictum varius ac eu urna. Suspendisse ut tristique ex.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 頁尾 (Footer) -->
+    <footer class="bg-dark text-white text-center py-4">
+        <p class="mb-0">&copy; 2026 版權所有 All Rights Reserved.</p>
+    </footer>
+
+    <!-- 4. JavaScript 庫引入 (使用完整版的 jQuery 以支援 swing/linear 動畫) -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
+    <!-- 自訂慢速平滑滾動腳本 -->
+    <script>
+        $(document).ready(function() {
+            // 監聽有套用 .smooth-scroll 類別的選單連結
+            $('.smooth-scroll').on('click', function(e) {
+                var targetId = $(this).attr('href');
+                
+                if (targetId && targetId !== '#' && $(targetId).length) {
+                    e.preventDefault();
+                    
+                    var navHeight = $('#mainNav').outerHeight() || 58;
+                    var targetPosition = $(targetId).offset().top - navHeight;
+
+                    // 若手機版選單處於開啟狀態，點擊後自動收合
+                    if ($('.navbar-collapse').hasClass('show')) {
+                        $('.navbar-collapse').collapse('hide');
+                    }
+
+                    // 使用 jQuery animate 控制滾動時間 (1200 ms = 1.2 秒，數字越大越慢越滑順)
+                    $('html, body').stop().animate({
+                        scrollTop: targetPosition
+                    }, 1200, 'swing'); 
+                }
+            });
+        });
+    </script>
+</body>
+</html>
