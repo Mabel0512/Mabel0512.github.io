@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide Effect</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;          /* 關掉原生捲動，改由 JS 控制 */
+    overscroll-behavior: none;
+    font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  }
+  #track {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    will-change: transform;
+  }
+  .page {
+    width: 100vw;
+    height: var(--h, 100vh);   /* 每一面都剛好一個螢幕高 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: clamp(32px, 7vw, 96px);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    user-select: none;
+  }
+  .red    { background: #e53935; }
+  .blue   { background: #1e63d6; }
+  .green  { background: #2e9e48; }
+  .black  { background: #000;    }
+  .purple { background: #7b2fbf; }
+</style>
+</head>
+<body>
+  <div id="track">
+    <section class="page red">第一頁</section>
+    <section class="page blue">第二頁</section>
+    <section class="page green">第三頁上半部</section>
+    <section class="page black">第三頁下半部</section>
+    <section class="page purple">第四頁</section>
+  </div>
+
+<script>
+(function () {
+  const track = document.getElementById('track');
+
+  let H = window.innerHeight;     // 一面的高度
+  let target = 0;                 // 目標位置
+  let current = 0;                // 目前畫面位置
+  let anim = null;                // 切頁動畫 {from, to, start, dur}
+  let lastWheel = 0;              // 上一次 wheel 事件時間
+
+  const SNAP_DURATION = 600;      // 切頁動畫時間 (ms)，越小越「快速」
+  const GESTURE_GAP = 160;        // 間隔超過這麼久才算「新的一滑」(過濾觸控板慣性)
+  const SMOOTH = 90;              // 第三頁平滑程度 (ms)，越大越滑順、越慢跟上
+
+  // 位置：0=第一頁, 1H=第二頁, 2H=第三頁上半部, 3H=第三頁下半部, 4H=第四頁
+  const P3_TOP = () => 2 * H;
+  const P3_BOTTOM = () => 3 * H;
+  const near = (a, b) => Math.abs(a - b) < 1;
+
+  function setHeight() {
+    document.documentElement.style.setProperty('--h', H + 'px');
+  }
+  setHeight();
+
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function snapTo(y) {
+    target = y;
+    anim = { from: current, to: y, start: performance.now(), dur: SNAP_DURATION };
+  }
+
+  // 第三頁上下半部之間是否要「跟著滑」
+  function inFreeZone(d) {
+    if (target < P3_TOP() - 1 || target > P3_BOTTOM() + 1) return false;
+    if (near(target, P3_TOP()) && d < 0) return false;     // 在上半部頂端往上 → 切回第二頁
+    if (near(target, P3_BOTTOM()) && d > 0) return false;  // 在下半部底端往下 → 切到第四頁
+    return true;
+  }
+
+  // d: 捲動量 (正 = 往下)，isNewGesture: 是不是新的一滑
+  function handleDelta(d, isNewGesture) {
+    if (anim || d === 0) return;
+
+    // 第三頁上 ↔ 下：同步、連續捲動
+    if (inFreeZone(d)) {
+      target = Math.min(P3_BOTTOM(), Math.max(P3_TOP(), target + d));
+      return;
+    }
+
+    // 其他地方：輕滑一下就整面切換
+    if (!isNewGesture) return;            // 同一次滑動的慣性不重複觸發
+    if (Math.abs(target - current) > 2) return; // 第三頁還在追趕時先不切
+
+    const idx = Math.round(target / H);   // 0..4
+    if (d > 0) {
+      if (idx === 0) snapTo(H);
+      else if (idx === 1) snapTo(2 * H);
+      else if (idx === 3) snapTo(4 * H);
+    } else {
+      if (idx === 4) snapTo(3 * H);
+      else if (idx === 2) snapTo(H);
+      else if (idx === 1) snapTo(0);
+    }
+  }
+
+  // ---------- 滑鼠 / 觸控板 ----------
+  window.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    let d = e.deltaY;
+    if (e.deltaMode === 1) d *= 16;       // 以「行」為單位
+    else if (e.deltaMode === 2) d *= H;   // 以「頁」為單位
+    const now = performance.now();
+    const isNew = now - lastWheel > GESTURE_GAP;
+    lastWheel = now;
+    handleDelta(d, isNew);
+  }, { passive: false });
+
+  // ---------- 鍵盤 ----------
+  window.addEventListener('keydown', function (e) {
+    const map = { ArrowDown: 120, ArrowUp: -120, PageDown: H, PageUp: -H, ' ': H };
+    if (e.key in map) {
+      e.preventDefault();
+      handleDelta(e.shiftKey && e.key === ' ' ? -H : map[e.key], true);
+    }
+  });
+
+  // ---------- 手機觸控 ----------
+  let touchY = 0, touchStartY = 0, usedFree = false;
+  window.addEventListener('touchstart', function (e) {
+    touchY = touchStartY = e.touches[0].clientY;
+    usedFree = false;
+  }, { passive: true });
+  window.addEventListener('touchmove', function (e) {
+    e.preventDefault();
+    const y = e.touches[0].clientY;
+    const d = touchY - y;
+    touchY = y;
+    if (!anim && inFreeZone(d)) {
+      usedFree = true;
+      handleDelta(d, false);
+    }
+  }, { passive: false });
+  window.addEventListener('touchend', function () {
+    const total = touchStartY - touchY;
+    if (!usedFree && Math.abs(total) > 40) handleDelta(total, true);
+  });
+
+  // ---------- 視窗大小改變 ----------
+  window.addEventListener('resize', function () {
+    const oldH = H;
+    H = window.innerHeight;
+    setHeight();
+    target = target / oldH * H;
+    current = current / oldH * H;
+    if (anim) { anim.from = anim.from / oldH * H; anim.to = anim.to / oldH * H; }
+  });
+
+  // ---------- 動畫迴圈 ----------
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min(now - last, 50);
+    last = now;
+
+    if (anim) {
+      const p = Math.min((now - anim.start) / anim.dur, 1);
+      current = anim.from + (anim.to - anim.from) * easeInOutCubic(p);
+      if (p >= 1) { current = anim.to; anim = null; }
+    } else {
+      // 平滑追趕：滑鼠一格一格跳，畫面還是連續移動
+      current += (target - current) * (1 - Math.exp(-dt / SMOOTH));
+      if (Math.abs(target - current) < 0.1) current = target;
+    }
+
+    track.style.transform = 'translate3d(0,' + (-current) + 'px,0)';
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
