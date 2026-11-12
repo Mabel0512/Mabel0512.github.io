@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Slide 滑動效果</title>
+
+  <!-- 載入 jQuery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+  <style>
+    /* 清掉瀏覽器預設的外距 */
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 隱藏捲軸，捲動改由 jQuery 控制 */
+    html, body {
+      overflow: hidden;
+    }
+
+    /* 一般的 div：100vh，剛好佔滿整個螢幕 */
+    .page {
+      height: 100vh;
+    }
+
+    /* 長的 div：200vh（想要 300vh 就改這裡，並在 HTML 多加一個 .half） */
+    .page.long {
+      height: 200vh;
+    }
+
+    /* 讓文字置中：一般 div 本身置中，長 div 則是裡面每一個 .half 各自置中 */
+    .page,
+    .half {
+      display: flex;
+      justify-content: center;  /* 水平置中 */
+      align-items: center;      /* 垂直置中 */
+      color: white;             /* 白色字 */
+      font-size: 60px;
+      font-weight: bold;
+    }
+
+    /* 長 div 裡的內容由上往下排 */
+    .page.long {
+      flex-direction: column;
+    }
+
+    /* 長 div 裡的每一個半部都是 100vh */
+    .half {
+      height: 100vh;
+      width: 100%;
+    }
+
+    /* 顏色：紅、藍、綠、黑、紫、橘 */
+    #p1 { background: red; }
+    #p2 { background: blue; }
+    #p3-top { background: green; }
+    #p3-bottom { background: black; }
+    #p4 { background: purple; }
+    #p5 { background: orange; }
+  </style>
+</head>
+<body>
+
+  <!-- 五個 div，第三個是 200vh 的長 div -->
+  <div class="page" id="p1">第一頁</div>
+  <div class="page" id="p2">第二頁</div>
+  <div class="page long" id="p3">
+    <div class="half" id="p3-top">第三頁上半部</div>
+    <div class="half" id="p3-bottom">第三頁下半部</div>
+  </div>
+  <div class="page" id="p4">第四頁</div>
+  <div class="page" id="p5">第五頁</div>
+
+  <script>
+    $(function () {
+
+      var h = 0;              // 一個螢幕的高度
+      var pages = [];         // 每個 div 可以停的範圍：{ start: 開頭位置, end: 最後一個畫面的位置 }
+      var isMoving = false;   // 是否正在換頁（換頁時不接受新的滑動）
+      var lastTime = 0;       // 上一次滾輪事件的時間
+
+      var current = 0;        // 畫面「現在」的位置
+      var target = 0;         // 畫面「要去」的位置
+      var smoothing = false;  // 平滑捲動是否正在進行
+
+      // 量出每個 div 的位置與高度
+      // 一般 div：start 和 end 一樣；長 div：end 比 start 多（中間可以平滑捲動）
+      function measure() {
+        h = $(window).height();
+        pages = [];
+        $('.page').each(function () {
+          var start = this.offsetTop;
+          var end = start + $(this).outerHeight() - h;
+          pages.push({ start: start, end: end });
+        });
+      }
+
+      // 找出某個位置是在第幾個 div 裡（從 0 開始）
+      function findPage(pos) {
+        for (var i = 0; i < pages.length; i++) {
+          if (pos >= pages[i].start - 1 && pos <= pages[i].end + 1) return i;
+        }
+        return 0;
+      }
+
+      // 一開始先量好位置，並回到最上面
+      measure();
+      $(window).scrollTop(0);
+
+      // 視窗大小改變時，重新量，並對齊到目前這個 div 的開頭
+      $(window).on('resize', function () {
+        var i = findPage(current);
+        measure();
+        current = target = pages[i].start;
+        $(window).scrollTop(current);
+      });
+
+      // ===== 平滑捲動（長 div 用）=====
+      // 每一格畫面都往目標移動「剩下距離的 12%」，
+      // 所以滑鼠就算一格一格地滾，畫面也會連續、絲滑地滑過去
+      function smoothScroll() {
+        if (!smoothing) return;              // 被換頁打斷就停止
+
+        var diff = target - current;         // 還差多少
+        if (Math.abs(diff) < 0.5) {          // 差不多到了就直接對齊
+          current = target;
+          $(window).scrollTop(current);
+          smoothing = false;
+          return;
+        }
+        current = current + diff * 0.12;     // 往目標靠近一點（數字越小越滑順）
+        $(window).scrollTop(current);
+        requestAnimationFrame(smoothScroll); // 下一格畫面繼續
+      }
+
+      // 用 jQuery 的 animate 在 0.6 秒內整頁切換到某個位置
+      function snapTo(pos) {
+        smoothing = false;                   // 停掉平滑捲動
+        isMoving = true;
+        target = pos;
+        $('html, body').stop().animate({ scrollTop: pos }, 600, function () {
+          current = pos;                     // 記下現在的位置
+          isMoving = false;                  // 動畫結束，才能再換頁
+        });
+      }
+
+      // 監聽滑鼠滾輪
+      // （用 addEventListener 加上 passive:false，才能用 preventDefault 擋住瀏覽器原本的捲動）
+      window.addEventListener('wheel', function (e) {
+        e.preventDefault();  // 不讓瀏覽器自己捲動
+
+        // 判斷這是不是「新的一次」滑動：
+        // 觸控板滑一下會連續送出很多事件，超過 200 毫秒沒有新事件才算下一次
+        var now = Date.now();
+        var isNewScroll = (now - lastTime > 200);
+        lastTime = now;
+
+        // 正在換頁就先不理會
+        if (isMoving) return;
+
+        var goDown = e.deltaY > 0;   // deltaY > 0 代表往下滑
+        var i = findPage(target);    // 目前在第幾個 div
+        var page = pages[i];
+
+        // ===== 長 div 裡面：一般的平滑捲動 =====
+        // 往下且還沒到底，或往上且還沒到頂 → 只改「目標位置」，交給 smoothScroll 慢慢滑
+        if ((goDown && target < page.end) || (!goDown && target > page.start)) {
+          target = target + e.deltaY;
+          target = Math.max(page.start, Math.min(page.end, target));  // 不超出這個 div
+          if (!smoothing) {
+            smoothing = true;
+            requestAnimationFrame(smoothScroll);
+          }
+          return;
+        }
+
+        // ===== 到了 div 的邊緣：輕滑一下就整頁快速切換 =====
+        if (!isNewScroll) return;  // 同一次滑動只換一頁（剛捲到底的那一下也會先停住）
+
+        if (goDown && i < pages.length - 1) {
+          snapTo(pages[i + 1].start);  // 往下：到下一個 div 的開頭
+        } else if (!goDown && i > 0) {
+          snapTo(pages[i - 1].end);    // 往上：到上一個 div 的最後一個畫面（長 div 就是它的下半部）
+        }
+
+      }, { passive: false });
+
+    });
+  </script>
+
+</body>
+</html>
