@@ -437,6 +437,7 @@ mark.hl.in{background-size:100% 100%}
 .title .tin::before{content:"";display:block;width:48px;height:2px;background:var(--ink);opacity:.5;margin:0 auto 26px}
 @media(min-width:861px){.scrolly .cstep:first-child{min-height:110svh;justify-content:flex-start;padding-top:18svh}}
 @media(max-width:860px){.title{padding:16svh 0 2svh}}
+#title{overflow:visible}#title::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:45svh;background:linear-gradient(to bottom,rgba(250,246,240,0),#faf6f0 85%);pointer-events:none}
 </style>
 </head>
 <body>
@@ -723,7 +724,7 @@ document.getElementById('heat').innerHTML=`<thead><tr><th>縣市</th>${keys.map(
 
 }
 
-{
+if(false){ /* fade switch intro→part 1 disabled */
 const title=document.getElementById('title');
 const lastStep=[...document.querySelectorAll('.step')].pop();
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
