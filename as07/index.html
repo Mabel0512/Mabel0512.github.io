@@ -421,6 +421,22 @@ mark.hl.in{background-size:100% 100%}
 .anfine{margin-top:26px;font-size:13px;color:var(--mute)}
 .anfine p{margin:0 0 6px!important}
 @media(max-width:700px){.anrow{grid-template-columns:minmax(0,1fr);gap:4px}.anhead{display:none}}
+
+/* smoother chapter transitions */
+.pano{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 24%,#000 76%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 24%,#000 76%,transparent 100%);transition:opacity 1.4s ease}
+.title:not(.vis) .pano,.hzwrap:not(.vis) .pano,.ending:not(.vis) .pano{opacity:0}
+.rv{transition:opacity 1s ease,transform 1s cubic-bezier(.2,.7,.2,1)}
+.rv:not(.in2){opacity:0;transform:translateY(28px)}
+.ai-note{background:linear-gradient(to bottom,#faf6f0 0,#f3eee6 28%)}
+@media(prefers-reduced-motion:reduce){.rv,.pano{transition:none}.rv:not(.in2){opacity:1;transform:none}}
+
+/* no background wall after intro; chapter headings inline */
+.title .pano,.hzwrap .pano,.ending .pano{display:none!important}
+.title::after,.hzwrap::after,.ending::after{display:none}
+.title{min-height:auto;padding:24svh 0 4svh;scroll-snap-align:none}
+.title .tin::before{content:"";display:block;width:48px;height:2px;background:var(--ink);opacity:.5;margin:0 auto 26px}
+@media(min-width:861px){.scrolly .cstep:first-child{min-height:110svh;justify-content:flex-start;padding-top:18svh}}
+@media(max-width:860px){.title{padding:16svh 0 2svh}}
 </style>
 </head>
 <body>
@@ -927,6 +943,14 @@ view.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){e.preventDefault();
 let st=null;view.addEventListener('scroll',()=>{clearTimeout(st);st=setTimeout(()=>{const i=Math.round(view.scrollLeft/view.clientWidth);if(i!==idx)show(i)},120)},{passive:true});
 show(0);
 }
+
+(()=>{const secs=document.querySelectorAll('.title,.hzwrap,.ending');
+const so=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('vis',e.isIntersecting)),{rootMargin:'-15% 0px -15% 0px'});
+secs.forEach(s=>so.observe(s));
+const els=document.querySelectorAll('.title .tin>*,.hzhead,.hzview,.hzbar,.ein>*,.ai-note h2,.ai-note table,.ai-note p');
+els.forEach((el,i)=>{el.classList.add('rv');const sib=[...el.parentElement.children].indexOf(el);el.style.transitionDelay=Math.min(sib,3)*0.15+'s'});
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in2');ro.unobserve(e.target)}}),{rootMargin:'0px 0px -12% 0px'});
+els.forEach(el=>ro.observe(el));})();
 </script>
 </body>
 </html>
