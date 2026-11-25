@@ -436,10 +436,9 @@ mark.hl.in{background-size:100% 100%}
 .title{min-height:auto;padding:24svh 0 4svh;scroll-snap-align:none}
 .title .tin::before{content:"";display:block;width:48px;height:2px;background:var(--ink);opacity:.5;margin:0 auto 26px}
 @media(min-width:861px){
- .title{padding:12svh 0 0;background:#faf6f0;z-index:4;pointer-events:none}
- .title a,.title button{pointer-events:auto}
- #charts,#charts2{margin-top:-24svh}
- .scrolly .cstep:first-child{min-height:100svh}
+ .title{padding:10svh 0 4svh;background:#faf6f0;z-index:4;pointer-events:none}
+ .scrolly.pin .cstep:first-child{justify-content:flex-start}
+ .scrolly.pin .cstep:first-child .ctext{position:sticky}
 }
 .obg{-webkit-mask-image:linear-gradient(to bottom,#000 50%,transparent 100%);mask-image:linear-gradient(to bottom,#000 50%,transparent 100%)}
 @media(max-width:860px){.title{padding:16svh 0 2svh}}
@@ -958,6 +957,25 @@ const els=document.querySelectorAll('.title .tin>*,.hzhead,.hzview,.hzbar,.ein>*
 els.forEach((el,i)=>{el.classList.add('rv');const sib=[...el.parentElement.children].indexOf(el);el.style.transitionDelay=Math.min(sib,3)*0.15+'s'});
 const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in2');ro.unobserve(e.target)}}),{rootMargin:'0px 0px -12% 0px'});
 els.forEach(el=>ro.observe(el));})();
+
+/* pin first frame of part 1/2: title scrolls away first, then text moves */
+(()=>{const pairs=[['title','charts'],['title2','charts2']];
+const lay=()=>{pairs.forEach(([t,sid])=>{const T=document.getElementById(t),S=document.getElementById(sid);if(!T||!S)return;
+ const st=S.querySelector('.cstep'),tx=st.querySelector('.ctext'),cb=S.querySelector('.chartbox[data-k="0"]');
+ if(innerWidth<=860){S.classList.remove('pin');S.style.marginTop='';st.style.cssText='';tx.style.top='';cb.style.transform='';return}
+ S.classList.add('pin');
+ const H=innerHeight,th=T.offsetHeight,ht=tx.offsetHeight;
+ const inner=cb.firstElementChild;cb.style.transform='';const hc=inner?inner.getBoundingClientRect().height:ht;
+ const gap=H*0.14;
+ const c=Math.max(H/2,th+gap+Math.max(ht,hc)/2);
+ const top=Math.round(c-ht/2);
+ S.style.marginTop=(-th)+'px';
+ st.style.paddingTop=top+'px';
+ st.style.minHeight=(top+ht+th+H*0.35)+'px';
+ tx.style.top=top+'px';
+ cb.style.transform='translateY('+Math.round(c-H/2)+'px)';
+});};
+lay();addEventListener('load',lay);addEventListener('resize',lay);document.fonts&&document.fonts.ready.then(lay);})();
 </script>
 </body>
 </html>
