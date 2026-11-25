@@ -443,6 +443,7 @@ mark.hl.in{background-size:100% 100%}
 .obg{-webkit-mask-image:linear-gradient(to bottom,#000 50%,transparent 100%);mask-image:linear-gradient(to bottom,#000 50%,transparent 100%)}
 @media(max-width:860px){.title{padding:16svh 0 2svh}}
 #title{overflow:visible}#title::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:45svh;background:linear-gradient(to bottom,rgba(250,246,240,0),#faf6f0 85%);pointer-events:none}
+.chartbox[data-k="0"]>*{opacity:var(--pin,1)}
 </style>
 </head>
 <body>
@@ -958,24 +959,27 @@ els.forEach((el,i)=>{el.classList.add('rv');const sib=[...el.parentElement.child
 const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in2');ro.unobserve(e.target)}}),{rootMargin:'0px 0px -12% 0px'});
 els.forEach(el=>ro.observe(el));})();
 
-/* pin first frame of part 1/2: title scrolls away first, then text moves */
-(()=>{const pairs=[['title','charts'],['title2','charts2']];
-const lay=()=>{pairs.forEach(([t,sid])=>{const T=document.getElementById(t),S=document.getElementById(sid);if(!T||!S)return;
- const st=S.querySelector('.cstep'),tx=st.querySelector('.ctext'),cb=S.querySelector('.chartbox[data-k="0"]');
- if(innerWidth<=860){S.classList.remove('pin');S.style.marginTop='';st.style.cssText='';tx.style.top='';cb.style.transform='';return}
+/* pin first frame of part 1/2: title leaves first, content waits centered */
+(()=>{const pairs=[['title','charts'],['title2','charts2']];let items=[];
+const lay=()=>{items=[];pairs.forEach(([t,sid])=>{const T=document.getElementById(t),S=document.getElementById(sid);if(!T||!S)return;
+ const st=S.querySelector('.cstep'),tx=st.querySelector('.ctext'),cb=S.querySelector('.chartbox[data-k="0"]'),inner=cb.firstElementChild;
+ const src=st.querySelector(':scope>.csource');if(src)tx.append(src);
+ if(innerWidth<=860){S.classList.remove('pin');S.style.marginTop='';st.style.cssText='';tx.style.top='';tx.style.opacity='';cb.style.removeProperty('--pin');return}
  S.classList.add('pin');
  const H=innerHeight,th=T.offsetHeight,ht=tx.offsetHeight;
- const inner=cb.firstElementChild;cb.style.transform='';const hc=inner?inner.getBoundingClientRect().height:ht;
- const gap=H*0.14;
- const c=Math.max(H/2,th+gap+Math.max(ht,hc)/2);
- const top=Math.round(c-ht/2);
+ const top=Math.max(16,Math.round(H/2-ht/2));
  S.style.marginTop=(-th)+'px';
  st.style.paddingTop=top+'px';
- st.style.minHeight=(top+ht+th+H*0.35)+'px';
+ st.style.minHeight=(top+ht+th+H*0.3)+'px';
  tx.style.top=top+'px';
- cb.style.transform='translateY('+Math.round(c-H/2)+'px)';
-});};
-lay();addEventListener('load',lay);addEventListener('resize',lay);document.fonts&&document.fonts.ready.then(lay);})();
+ items.push({T,tx,cb,sub:T.querySelector('.tin')});
+});upd();};
+const upd=()=>{const H=innerHeight;items.forEach(({T,tx,cb,sub})=>{
+ const tb=sub.getBoundingClientRect().bottom;
+ const ct=Math.min(tx.getBoundingClientRect().top,...[...cb.children].map(e=>e.getBoundingClientRect().top));
+ const o=Math.max(0,Math.min(1,(ct-tb-H*0.10)/(H*0.18)));
+ tx.style.opacity=o;cb.style.setProperty('--pin',o);});};
+lay();addEventListener('load',lay);addEventListener('resize',lay);addEventListener('scroll',upd,{passive:true});document.fonts&&document.fonts.ready.then(lay);})();
 </script>
 </body>
 </html>
